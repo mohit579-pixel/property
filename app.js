@@ -5,7 +5,7 @@ const path = require("path");
 const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
 require('dotenv').config();
-const dbUrl = "mongodb+srv://mohitkhandelwal123:mAzOyHJD8CPPEDKg@cluster1.ahrgzaz.mongodb.net/?retryWrites=true&w=majority";
+const dbUrl = "mongodb+srv://mohitkhandelwal57911:Mfvuf9deUsaWPDxS@cluster0.6j61ldr.mongodb.net/";
 const multer = require('multer')
 const { storage } = require("./cloudConfig.js");
 const upload = multer({ storage:storage });
