@@ -1,7 +1,5 @@
 {
-  "engines": {
-    "node": "v18.17.1"
-  },
+  
   "dependencies": {
     "@mapbox/mapbox-sdk": "^0.15.3",
     "body-parser": "^1.20.2",
