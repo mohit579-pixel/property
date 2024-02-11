@@ -10,9 +10,10 @@ const multer = require('multer')
 const { storage } = require("./cloudConfig.js");
 const upload = multer({ storage:storage });
 const session = require("express-session");
+const MongoStore=require("connect-mongo");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
-const MongoStore=require("connect-mongo");
+
 const User = require("./models/User");
 const Listing=require("./models/listings.js");
 const mbxGeocoding = require('@mapbox/mapbox-sdk/services/geocoding');
@@ -40,11 +41,14 @@ const store=MongoStore.create({
 
 
 });
+store.on("error",()=>{
+    console.log("Error in Mongo STORE",err);
+});
 
 // Session Configuration
 const sessionOptions = {
     store,
-    secret: process.env.SECRET,
+    secret: "SECRET",
     resave: false,
     saveUninitialized: true,
     cookie: {
