@@ -34,7 +34,7 @@ app.use(express.static(path.join(__dirname, "public")));
 const store=MongoStore.create({
     mongoUrl:dbUrl,
     crypto:{
-        secret:process.env.SECRET,
+        secret:"SECRET",
     },
     touchAfter:24*3600,
 
@@ -42,17 +42,18 @@ const store=MongoStore.create({
 });
 
 // Session Configuration
-const sessionOptions={
+const sessionOptions = {
     store,
-    secret:process.env.SECRET,
-    resave:false,
-    saveUninitialized:true,
-    cookie:{
-        expires:Date.now()+7*24*60*60*1000,
-        maxAge:7*24*60*60*1000,
-        httpOnly:true,
+    secret: process.env.SECRET,
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+        expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // Expires 7 days from now
+        httpOnly: true,
+        maxAge: 7 * 24 * 60 * 60 * 1000, // Alternatively, you can remove this line if not needed
     },
 };
+
 
 // Passport Configuration
 app.use(session(sessionOptions));
