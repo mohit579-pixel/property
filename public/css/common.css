@@ -1,9 +1,17 @@
+@font-face {
+  font-family: Imprima;
+  src: url(../fonts/Imprima-Regular.ttf) format("opentype");
+}
 
+@font-face {
+  font-family: Pacifico;
+  src: url(../fonts/Pacifico-Regular.ttf) format("opentype");
+}
 
 /* Variables */
 :root {
-  --base-font:  sans-serif;
-  --heading-font:  sans-serif;
+  --base-font: "Imprima", sans-serif;
+  --heading-font: "Pacifico", sans-serif;
   --color-primary-1: rgb(38,41,52,1);
   --color-primary-2: rgba(38,41,52, 0.8);
   --color-primary-3: rgba(38,41,52, 0.6);
