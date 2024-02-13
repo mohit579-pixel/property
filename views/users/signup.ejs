@@ -109,7 +109,8 @@ mode: 'no-cors',
     headers: {
       'Content-Type': 'application/json',
       'secretKey': 'hbHP7hQllZ0uNr2K4UaBNxEX7x0vSJQXVkFBWcDdfBaGrn1soiYQtDazprJZfPpNp',
-      'clientId': '5f1af8134901ef262716defd86fb635d:43d1c179432198b1b3989fdce23d84d8'
+      'clientId': '5f1af8134901ef262716defd86fb635d:43d1c179432198b1b3989fdce23d84d8',
+'Content-Security-Policy': "default-src 'self' https://api.emptra.com"
     },
     body: JSON.stringify(requestBody)
   };
