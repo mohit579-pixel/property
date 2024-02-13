@@ -5,7 +5,7 @@ const path = require("path");
 const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
 require('dotenv').config();
-const dbUrl = "mongodb+srv://21512141dypit:ad97mPa5qOk2IBNV@cluster0.vb34mym.mongodb.net/?retryWrites=true&w=majority";
+const dbUrl = "mongodb+srv://vaibhavidixit511:VhVExySyQigUl5fh@cluster0.0ptb2ik.mongodb.net/?retryWrites=true&w=majority";
 const multer = require('multer')
 const { storage } = require("./cloudConfig.js");
 const upload = multer({ storage:storage });
@@ -29,7 +29,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(methodOverride("_method"));
 app.engine('ejs', ejsMate);
-app.use(express.static(path.join(__dirname, "/public")));
+app.use(express.static(path.join(__dirname, "public")));
 
 
 const store=MongoStore.create({
@@ -70,6 +70,7 @@ passport.deserializeUser(User.deserializeUser());
 app.use((req, res, next) => {
     res.setHeader(
         "Content-Security-Policy",
+        'frame-src https://console.dialogflow.com/',
         "default-src 'none'; font-src 'self' data:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';"
     );
     next();
