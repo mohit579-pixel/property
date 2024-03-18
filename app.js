@@ -5,22 +5,24 @@ const path = require("path");
 const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
 require('dotenv').config();
-const dbUrl = "mongodb+srv://vaibhavidixit511:VhVExySyQigUl5fh@cluster0.0ptb2ik.mongodb.net/?retryWrites=true&w=majority";
+const dbUrl = "mongodb://localhost:27017/property";
 const multer = require('multer')
 const { storage } = require("./cloudConfig.js");
-const upload = multer({ storage:storage });
+const upload = multer({ storage: storage });
 const session = require("express-session");
-const MongoStore=require("connect-mongo");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
-
+const MongoStore = require("connect-mongo");
 const User = require("./models/User");
-const Listing=require("./models/listings.js");
+const Listing = require("./models/listings.js");
 const mbxGeocoding = require('@mapbox/mapbox-sdk/services/geocoding');
 const mapToken = "pk.eyJ1IjoiZGVsdGEtc3R1ZHVlbnQiLCJhIjoiY2xvMDk0MTVhMTJ3ZDJrcGR5ZDFkaHl4ciJ9.Gj2VU1wvxc7rFVt5E4KLOQ";
-const WrapAsync=require("./utils/WrapAsync.js");
+const WrapAsync = require("./utils/WrapAsync.js");
+var request = require('request');
+const clientId = '5f1af8134901ef262716defd86fb635d:43d1c179432198b1b3989fdce23d84d8'; // Replace with your actual secret key
+const secretKey = 'hbHP7hQllZ0uNr2K4UaBNxEX7x0vSJQXVkFBWcDdfBaGrn1soiYQtDazprJZfPpNp';
 // console.log(mapToken);
-const ExpressError=require("./utils/ExpressError.js");
+const ExpressError = require("./utils/ExpressError.js");
 const geoCodingClient = mbxGeocoding({ accessToken: mapToken });
 // const fetch = require('node-fetch');
 app.set("view engine", "ejs");
@@ -29,35 +31,31 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(methodOverride("_method"));
 app.engine('ejs', ejsMate);
-app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(path.join(__dirname, "/public")));
 
 
-const store=MongoStore.create({
-    mongoUrl:dbUrl,
-    crypto:{
-        secret:"SECRET",
+const store = MongoStore.create({
+    mongoUrl: dbUrl,
+    crypto: {
+        secret: process.env.SECRET,
     },
-    touchAfter:24*3600,
+    touchAfter: 24 * 3600,
 
 
-});
-store.on("error",()=>{
-    console.log("Error in Mongo STORE",err);
 });
 
 // Session Configuration
 const sessionOptions = {
     store,
-    secret: "SECRET",
+    secret: process.env.SECRET,
     resave: false,
     saveUninitialized: true,
     cookie: {
-        expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // Expires 7 days from now
+        expires: Date.now() + 7 * 24 * 60 * 60 * 1000,
+        maxAge: 7 * 24 * 60 * 60 * 1000,
         httpOnly: true,
-        maxAge: 7 * 24 * 60 * 60 * 1000, // Alternatively, you can remove this line if not needed
     },
 };
-
 
 // Passport Configuration
 app.use(session(sessionOptions));
@@ -66,15 +64,6 @@ app.use(passport.session());
 passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
-
-app.use((req, res, next) => {
-    res.setHeader(
-        "Content-Security-Policy",
-        'frame-src https://console.dialogflow.com/',
-        "default-src 'none'; font-src 'self' data:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';"
-    );
-    next();
-});
 
 
 // MongoDB Connection
@@ -96,7 +85,7 @@ async function main() {
 
 // Set local variables middleware
 app.use((req, res, next) => {
-    res.locals.currUser=req.user;
+    res.locals.currUser = req.user;
     res.locals.otp = req.user;
     res.locals.email = req.user ? req.user.email : null;
     // res.locals.success = req.flash("success");
@@ -109,7 +98,7 @@ app.use((req, res, next) => {
 
 //home
 
-app.get('/home',(req,res)=>{
+app.get('/home', (req, res) => {
     console.log(res.locals.currUser);
     console.log(process.env.CLOUD_NAME);
     res.render('listings/home.ejs');
@@ -121,7 +110,7 @@ app.get('/signup', (req, res) => {
 });
 app.post('/signup', async (req, res) => {
     try {
-        const { username, email, phone, city,aadhaar} = req.body.user;
+        const { username, email, phone, city, aadhaar } = req.body.user;
         // console.log(username);
         // const data =await https://documenter.getpostman.com/view/15230345/2s9XxyPsZS#24dfb751-5817-4765-9a6e-5eeef0551151;
         const pass = req.body.user.password;
@@ -133,11 +122,36 @@ app.post('/signup', async (req, res) => {
         console.error("Error during user registration:", error);
         res.status(500).send("Fail: " + error.message);
     }
+    //otp
 });
-app.post('/verify',async(req,res)=>{
-    const id=req.body.listid;
+app.post('/otp', async (req, res) => {
+    const options = {
+        method: 'POST',
+        url: 'https://api.emptra.com/aadhaarVerification/requestOtp',
+        headers: {
+            'Content-Type': 'application/json',
+            'secretKey': secretKey,
+            'clientId': clientId
+        },
+        body: JSON.stringify({
+            "aadhaarNumber": "893967628846" // You can replace this with req.body.aadhaarNumber if you're passing Aadhaar number through the request body
+        })
+    };
+
+    request(options, function (error, response, body) {
+        if (error) {
+            console.error('Error:', error);
+            res.status(500).send('Internal Server Error'); // Sending an error response in case of an error
+            return;
+        }
+        console.log('Response:', body,res);
+        res.send(body); // Sending the response received from the API
+    });
+});
+app.post('/verify', async (req, res) => {
+    const id = req.body.listid;
     let fetchListing = await Listing.findById(id);
-    fetchListing.verified=true;
+    fetchListing.verified = true;
     console.log(fetchListing);
     await fetchListing.save();
     res.redirect("/listings")
@@ -161,22 +175,22 @@ app.post('/login',
 
 //logout
 
-app.get('/logout',(req,res,next)=>{
-    req.logout((err)=>{
-        if(err){
+app.get('/logout', (req, res, next) => {
+    req.logout((err) => {
+        if (err) {
             return next(err);
         }
-        
+
         res.redirect("/home");
     })
 });
 
 //listings
-app.get('/listings',async(req,res)=>{
+app.get('/listings', async (req, res) => {
 
     let allisting = await Listing.find({});
     console.log(allisting);
-    res.render('listings/show.ejs',{allisting});
+    res.render('listings/show.ejs', { allisting });
 });
 app.get('/listings/new', async (req, res) => {
     res.render('listings/new.ejs');
@@ -197,7 +211,7 @@ app.post('/listings', async (req, res) => {
         data.verified = false;
         const newListing = new Listing(data);
         console.log(res.locals.currUser);
-        
+
         // Assuming req.user is properly populated with authenticated user's information
         if (req.user) {
             newListing.owner = req.user._id;
@@ -223,17 +237,17 @@ app.post('/listings', async (req, res) => {
 //     res.send(req.file);
 // });
 
-app.delete('/listings/:id',async(req,res)=>{
+app.delete('/listings/:id', async (req, res) => {
     let { id } = req.params;
     console.log(id);
     let deletedListing = await Listing.findByIdAndDelete(id);
     console.log(deletedListing);
-    
+
     res.redirect("/listings");
 });
 
-app.all("*",(req,res,next)=>{
-    next(new ExpressError(404,"Page Not Found"));
+app.all("*", (req, res, next) => {
+    next(new ExpressError(404, "Page Not Found"));
 });
 
 
@@ -263,7 +277,7 @@ app.all("*",(req,res,next)=>{
 
 
 
-app.listen(5000, () => {
+app.listen(4000, () => {
     console.log("Server is listening on port 3000");
 });
 

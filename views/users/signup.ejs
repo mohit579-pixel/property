@@ -4,7 +4,7 @@
     <div class="img">
 
         <img
-            src="/img/login1.png">
+            src="https://res.cloudinary.com/dymfsdc1w/image/upload/v1707585859/property/img1_xt6lom.png">
     </div>
     <div class="login-content">
         <form action="/signup" method="post">
@@ -17,7 +17,7 @@
                 </div>
                 <div class="div">
                     <h5>Name</h5>
-                    <input type="text" class="input otherField" name="user[username]">
+                    <input type="text" class="input " name="user[username]" required>
                 </div>
             </div>
             <div class="input-div one">
@@ -26,7 +26,7 @@
                 </div>
                 <div class="div">
                     <h5>Phone No</h5>
-                    <input type="text" class="input otherField" name="user[number]">
+                    <input type="text" class="input otherField" name="user[number]" required>
                 </div>
             </div>
             <div class="input-div one">
@@ -35,7 +35,7 @@
                 </div>
                 <div class="div">
                     <h5>Email</h5>
-                    <input type="email" class="input otherField" name="user[email]">
+                    <input type="email" class="input otherField" name="user[email]" required>
                 </div>
             </div>
             <div class="input-div one">
@@ -44,7 +44,7 @@
                 </div>
                 <div class="div">
                     <h5>City</h5>
-                    <input type="text" class="input otherField" name="user[city]">
+                    <input type="text" class="input otherField" name="user[city]" required>
                 </div>
             </div>
             <div class="input-div pass">
@@ -53,7 +53,7 @@
                 </div>
                 <div class="div">
                     <h5>Password</h5>
-                    <input type="password" class="input otherField" name="user[password]">
+                    <input type="password" class="input " name="user[password]" required>
                 </div>
             </div>
             <div class="input-div pass">
@@ -63,7 +63,7 @@
                 <div class="div">
                     <h5>Aadhaar</h5>
                     <input type="text" class="input otherField" name="user[aadhaar]"
-                        id="adharNo">
+                        id="adharNo" required>
                 </div>
             </div>
 
@@ -93,7 +93,45 @@
 </div>
 
 <script src="/js/ss1.js" type="text/javascript"></script>
+<script type="text/javascript">
 
+
+        new FinisherHeader({
+          "count": 100,
+          "size": {
+            "min": 2,
+            "max": 8,
+            "pulse": 0
+          },
+          "speed": {
+            "x": {
+              "min": 0,
+              "max": 0.4
+            },
+            "y": {
+              "min": 0,
+              "max": 0.6
+            }
+          },
+          "colors": {
+            "background": "#201e30",
+            "particles": [
+              "#fbfcca",
+              "#d7f3fe",
+              "#ffd0a7"
+            ]
+          },
+          "blending": "overlay",
+          "opacity": {
+            "center": 1,
+            "edge": 0
+          },
+          "skew": 0,
+          "shapes": [
+            "c"
+          ]
+        });
+        </script>
 
 <script>
             function sendOTP(){
@@ -104,13 +142,11 @@ const requestBody = {
   };
   
   const requestOptions = {
-mode: 'no-cors',
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'secretKey': 'hbHP7hQllZ0uNr2K4UaBNxEX7x0vSJQXVkFBWcDdfBaGrn1soiYQtDazprJZfPpNp',
-      'clientId': '5f1af8134901ef262716defd86fb635d:43d1c179432198b1b3989fdce23d84d8',
-'Content-Security-Policy': "default-src 'self' https://api.emptra.com"
+      'secretKey': 'G1ExYjneSyXIyeHPNLif2hSJGrE4X84Dh4OVi5QydCXmZ7g8j8hpeHHfCvwlQxejO',
+      'clientId': 'da17e0c20850b40f8e4d4ad3885716c3:81c2aa1fb890c720a810e382779bb55d'
     },
     body: JSON.stringify(requestBody)
   };
@@ -134,7 +170,7 @@ mode: 'no-cors',
         }
     
     })
-    .catch(error => console.log('Error:', error.message));
+    .catch(error => console.error('Error:', error.message));
   
 
 
@@ -148,8 +184,8 @@ mode: 'no-cors',
                 const aadhaarNo=document.getElementById("otp").value;
                 var myHeaders = new Headers();
                 myHeaders.append("Content-Type", "application/json");
-                myHeaders.append("secretKey", 'hbHP7hQllZ0uNr2K4UaBNxEX7x0vSJQXVkFBWcDdfBaGrn1soiYQtDazprJZfPpNp');
-                myHeaders.append("clientId", '5f1af8134901ef262716defd86fb635d:43d1c179432198b1b3989fdce23d84d8');
+                myHeaders.append("secretKey", 'G1ExYjneSyXIyeHPNLif2hSJGrE4X84Dh4OVi5QydCXmZ7g8j8hpeHHfCvwlQxejO');
+                myHeaders.append("clientId", 'da17e0c20850b40f8e4d4ad3885716c3:81c2aa1fb890c720a810e382779bb55d');
                 
                 var raw = JSON.stringify({
                   "client_id": clientId,
@@ -167,11 +203,17 @@ mode: 'no-cors',
                   .then(response => response.text())
                   .then(result =>{ 
                     const responseObject = JSON.parse(result);
+                    console
                     console.log(responseObject);
-                    if(responseObject.result.status_code
-                    ==200){
-                        document.getElementById('submitBtn').disabled='false';
-                    }}
+                    if(responseObject.code
+                    ==100){
+                      alert("success");
+                        
+                    }
+                  else{
+                    document.getElementById('submitBtn').disabled='false';
+                    alert("Wrong otp");
+                  }}
                   )
                   .catch(error => console.log('error', error));
 
